@@ -23,7 +23,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate /* 追加 */ {
 
     // スコア用
     var score = 0  // ←追加
+    var apple = 0
     var scoreLabelNode:SKLabelNode!    // ←追加
+    var appleLabelNode:SKLabelNode!
     var bestScoreLabelNode:SKLabelNode!    // ←追加
     let userDefaults:UserDefaults = UserDefaults.standard    // 追加
     
@@ -87,8 +89,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate /* 追加 */ {
             
             // ベストスコア更新か確認する --- ここから ---
             var bestScore = userDefaults.integer(forKey: "BEST")
-            if score > bestScore {
-                bestScore = score
+            if (score + apple) > bestScore {
+                bestScore = score + apple
                 bestScoreLabelNode.text = "Best Score:\(bestScore)"    // ←追加
                 userDefaults.set(bestScore, forKey: "BEST")
                 userDefaults.synchronize()
@@ -101,14 +103,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate /* 追加 */ {
             let action = SKAction.playSoundFileNamed("pigeon.mp3", waitForCompletion: true)
             self.run(action)
             
-            print("ScoreUp")
-            score += 1
-            scoreLabelNode.text = "Score:\(score)"    // ←追加
+            print("AppleGet")
+            apple += 1
+            appleLabelNode.text = "Apple:\(apple)"    // ←追加
             
             // ベストスコア更新か確認する --- ここから ---
             var bestScore = userDefaults.integer(forKey: "BEST")
-            if score > bestScore {
-                bestScore = score
+            if (score + apple) > bestScore {
+                bestScore = score + apple
                 bestScoreLabelNode.text = "Best Score:\(bestScore)"    // ←追加
                 userDefaults.set(bestScore, forKey: "BEST")
                 userDefaults.synchronize()
@@ -132,6 +134,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate /* 追加 */ {
     func restart() {
         score = 0
         scoreLabelNode.text = "Score:\(score)"    // ←追加
+        
+        apple = 0
+        appleLabelNode.text = "Apple:\(apple)"
 
         bird.position = CGPoint(x: self.frame.size.width * 0.2, y:self.frame.size.height * 0.7)
         bird.physicsBody?.velocity = CGVector.zero
@@ -349,10 +354,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate /* 追加 */ {
         scoreLabelNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
         scoreLabelNode.text = "Score:\(score)"
         self.addChild(scoreLabelNode)
+        
+        appleLabelNode = SKLabelNode()
+        appleLabelNode.fontColor = UIColor.black
+        appleLabelNode.position = CGPoint(x: 10, y: self.frame.size.height - 90)
+        appleLabelNode.zPosition = 100 // 一番手前に表示する
+        appleLabelNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        appleLabelNode.text = "Apple:\(apple)"
+        self.addChild(appleLabelNode)
 
         bestScoreLabelNode = SKLabelNode()
         bestScoreLabelNode.fontColor = UIColor.black
-        bestScoreLabelNode.position = CGPoint(x: 10, y: self.frame.size.height - 90)
+        bestScoreLabelNode.position = CGPoint(x: 10, y: self.frame.size.height - 120)
         bestScoreLabelNode.zPosition = 100 // 一番手前に表示する
         bestScoreLabelNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
 
